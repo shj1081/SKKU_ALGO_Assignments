@@ -1,17 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #define MAX_OPER_NUM 10000 /**< The maximum number of operations */
 #define MAX_NODE_NUM 500   /**< The maximum number of nodes */
 #define INT_MAX 2147483647 /**< Represent infinity in key value */
 
 typedef struct vertex {
-  int name;               // name of the vertex
-  int key;                // key value used in priority queue
-  struct vertex *next;    // pointer to the next vertex in the linked list
-  struct vertex *parent;  // pointer to the parent vertex in the linked list
+  int name;             // name of the vertex
+  int key;              // key value used in priority queue
+  struct vertex *next;  // pointer to the next vertex in the linked list
 } vertex;
 
 typedef struct priorityQueue {
@@ -31,7 +29,6 @@ void initQueue(priorityQueue *pq, int nodeNum) {
     pq->arr[i]->name = i + 1;   // set name of vertex
     pq->arr[i]->key = INT_MAX;  // set key to infinity
     pq->position[i + 1] = i;    // reset position of vertex
-    pq->arr[i]->parent = NULL;
   }
 }
 
@@ -122,8 +119,7 @@ vertex *extractMin(priorityQueue *pq) {
 /**
  * Inserts an edge into the graph.
  */
-void insertEdge(int *weight[], int *numbers, vertex *vertexLinkedList[],
-                int *edgeMark[], int *recalc, int *biggestEdgeWeight) {
+void insertEdge(int *weight[], int *numbers, vertex *vertexLinkedList[]) {
   // if edge does not exist, insert it
   if (weight[numbers[0]][numbers[1]] == 0) {
     // set weight of edge in weight matrix
@@ -157,20 +153,13 @@ void insertEdge(int *weight[], int *numbers, vertex *vertexLinkedList[],
       newVertex->next = NULL;
       vertexLinkedList[numbers[1]] = newVertex;
     }
-
-    if (*recalc == 0 && *biggestEdgeWeight < numbers[2]) {
-      *recalc = 0;
-    } else {
-      *recalc = 1;
-    }
   }
 }
 
 /**
  * Deletes an edge from the graph.
  */
-void deleteEdge(int *weight[], int *numbers, vertex *vertexLinkedList[],
-                int *edgeMark[], int *recalc) {
+void deleteEdge(int *weight[], int *numbers, vertex *vertexLinkedList[]) {
   // if edge exists, delete it
   if (weight[numbers[0]][numbers[1]] != 0) {
     // set weight of edge in weight matrix
@@ -210,17 +199,13 @@ void deleteEdge(int *weight[], int *numbers, vertex *vertexLinkedList[],
       prev = temp;
       temp = temp->next;
     }
-    if (*recalc == 0 && weight[numbers[0]][numbers[1]] != 0) {
-      *recalc = 1;
-    }
   }
 }
 
 /**
  * Changes the weight of an edge in the graph.
  */
-void changeWeight(int *weight[], int *numbers, vertex *vertexLinkedList[],
-                  int *edgeMark[], int *recalc) {
+void changeWeight(int *weight[], int *numbers, vertex *vertexLinkedList[]) {
   // if edge exists, change its weight
   if (weight[numbers[0]][numbers[1]] != 0) {
     // set weight of edge in weight matrix
@@ -252,20 +237,9 @@ void changeWeight(int *weight[], int *numbers, vertex *vertexLinkedList[],
 /**
  * Finds the minimum spanning tree of the graph using Prim's algorithm.
  */
-void findMST(priorityQueue *pq, int *weight[], int *edgeMark[], int nodeNum,
-             vertex *vertexLinkedList[], FILE *out, int *MST,
-             int *biggestEdgeWeight, int *reCalc) {
-  if (reCalc == 0) {
-    if (*MST != -1) {
-      fprintf(out, "%d\n", *MST);
-      return;
-    } else {
-      fprintf(out, "Disconnected\n");
-      return;
-    }
-  }
-
-  *MST = 0;
+void findMST(priorityQueue *pq, int *weight[], int nodeNum,
+             vertex *vertexLinkedList[], FILE *out) {
+  int MST = 0;
   pq->arr[0]->key = 0;
 
   // array to check if the vertex is connected
@@ -273,9 +247,6 @@ void findMST(priorityQueue *pq, int *weight[], int *edgeMark[], int nodeNum,
   for (int i = 0; i < nodeNum; i++) {
     connected[i] = 0;
   }
-
-  *biggestEdgeWeight = 0;  // reset biggest edge weight
-  int edgeCount = 0;
 
   // check if the graph is disconnected
   while (pq->size != 0) {
@@ -285,16 +256,7 @@ void findMST(priorityQueue *pq, int *weight[], int *edgeMark[], int nodeNum,
       fprintf(out, "Disconnected\n");
       return;
     }
-    if (u->parent != NULL) {
-      edgeMark[u->name][u->parent->name] = weight[u->name][u->parent->name];
-      edgeMark[u->parent->name][u->name] = weight[u->name][u->parent->name];
-    }
-    *MST += u->key;
-    if (u->key > *biggestEdgeWeight) {
-      *biggestEdgeWeight = u->key;
-    }
-
-    edgeCount++;
+    MST += u->key;
 
     // update key of adjacent vertices
     vertex *temp = vertexLinkedList[u->name];
@@ -303,20 +265,16 @@ void findMST(priorityQueue *pq, int *weight[], int *edgeMark[], int nodeNum,
       if (connected[temp->name - 1] == 0 &&
           pq->arr[pos]->key > weight[u->name][temp->name]) {
         pq->arr[pos]->key = weight[u->name][temp->name];
-        pq->arr[pos]->parent = u;
         heapifyUp(pq, pos);
       }
       temp = temp->next;
     }
   }
   // write MST to output file
-  fprintf(out, "%d\n", *MST);
-  *reCalc = 0;
+  fprintf(out, "%d\n", MST);
 }
 
 int main() {
-  int TIME = 0;
-  clock_t start = clock();
 
   // open input and output files
   FILE *file = fopen("mst.in", "r");
@@ -343,47 +301,30 @@ int main() {
   vertex *vertexLinkedList[MAX_NODE_NUM + 1];
   initVertexLinkedList(vertexLinkedList, nodeNum);
 
-  // edgeMark array for used edges for MST
-  int **edgeMark = (int **)malloc(sizeof(int *) * (nodeNum + 1));
-  for (int i = 0; i <= nodeNum; i++) {
-    edgeMark[i] = (int *)malloc(sizeof(int) * (nodeNum + 1));
-    for (int j = 0; j <= nodeNum; j++) {
-      edgeMark[i][j] = 0;
-    }
-  }
-
-  char oper[15];              // for storing operation temporarily
-  int numbers[3];             // for storing numbers temporarily
-  int MST = -1;               // for storing the total weight of MST
-  int biggestEdgeWeight = 0;  // for storing the biggest edge weight in MST
-  int reCalc = 1;             // for store if we should recalculate MST
+  char oper[15];   // for storing operation temporarily
+  int numbers[3];  // for storing numbers temporarily
 
   // read operations from input file and perform them
   while (fscanf(file, "%s", oper) != EOF) {
     if (strcmp(oper, "insertEdge") == 0) {
       fscanf(file, "%d %d %d", &numbers[0], &numbers[1], &numbers[2]);
-      insertEdge(weight, numbers, vertexLinkedList, edgeMark, &reCalc,
-                 &biggestEdgeWeight);
+      insertEdge(weight, numbers, vertexLinkedList);
     } else if (strcmp(oper, "changeWeight") == 0) {
       fscanf(file, "%d %d %d", &numbers[0], &numbers[1], &numbers[2]);
-      changeWeight(weight, numbers, vertexLinkedList, edgeMark, &reCalc);
+      changeWeight(weight, numbers, vertexLinkedList);
     } else if (strcmp(oper, "deleteEdge") == 0) {
       fscanf(file, "%d %d", &numbers[0], &numbers[1]);
-      deleteEdge(weight, numbers, vertexLinkedList, edgeMark, &reCalc);
+      deleteEdge(weight, numbers, vertexLinkedList);
     } else if (strcmp(oper, "findMST") == 0) {
       initQueue(&pq,
                 nodeNum);  // reset priority queue for each findMST operation
-      findMST(&pq, weight, edgeMark, nodeNum, vertexLinkedList, out, &MST,
-              &biggestEdgeWeight, &reCalc);
+      findMST(&pq, weight, nodeNum, vertexLinkedList, out);
     }
   }
 
   // close input and output files
   fclose(file);
   fclose(out);
-
-  TIME += ((int)clock() - start) / (CLOCKS_PER_SEC / 1000);
-  printf("TIME: %d\n", TIME);
 
   return 0;
 }
