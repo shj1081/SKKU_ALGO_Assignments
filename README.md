@@ -1,4 +1,4 @@
-# Computer Architecture Assignments
+# Algorithm Assignments
 
 ## Overview
 
