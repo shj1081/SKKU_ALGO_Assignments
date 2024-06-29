@@ -1,4 +1,4 @@
-# Algorithm PA1
+# Algorithm PA1 : Min-Max-Median Priority Queue
 
 ## Grade
 full score (16/10) - additional credit received  
