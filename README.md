@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains project assignments for the Computer Architecture course focused on RISC-V architecture. The assignments provide practical experience in different aspects of computer architecture.
+This repository contains implementations of several algorithms assignments from introduction to algorithms, each organized into separate folders. Each assignment folder includes its implementation files and documentation, meeting course requirements and coding standards.
 
 ## Projects Included
 
