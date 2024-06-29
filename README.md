@@ -1,23 +1,20 @@
-# Algorithm Assignments
-
-## Overview
-
+# Algorithms Project Assignments 
 This repository contains implementations of several algorithms assignments from introduction to algorithms, each organized into separate folders. Each assignment folder includes its implementation files and documentation, meeting course requirements and coding standards.
 
-## Projects Included
+# Projects Included
+## pa1: Min-Max-Median Priority Queue
+- **Objective:** Implement a Min-Max-Median Priority Queue in C.
+- **Grade:** Full score (16/10) - additional credit received.
+- **Key Features:** Efficiently manages integer elements with operations like insert, delete, and find.
 
-1. **Algorithm PA1: Min-Max-Median Priority Queue**
 
-   - **Objective**: Implement a Min-Max-Median Priority Queue in C to efficiently find the minimum, maximum, and median elements.
-   - **Required Functions**: `insert`, `delete_min`, `delete_max`, `delete_median`, `find_min`, `find_max`, `find_median`
-   - **Input/Output**: Process operations on the priority queue and return results in a specified format.
+## pa2: k-DNA Sequence Alignment
+- **Objective:** Implement dynamic programming for aligning k DNA sequences (upto 5 dna sequences of maximum length 120).
+- **Grade:** Full score (10/10).
+- **Key Features:** Uses a four-letter alphabet (A, T, G, C) and outputs alignment results to `hw2_output.txt`.
 
-2. **Algorithm PA2: Multiple Sequence Alignment**
 
-   - **Goal**: Implement an algorithm to align multiple DNA sequences using a four-letter alphabet.
-   - **Input/Output**: Read DNA sequences from `hw2_input.txt` and write alignment results to `hw2_output.txt`, marking identical alphabets across all sequences.
-
-3. **Algorithm PA3: Dynamic Minimum Spanning Tree**
-
-   - **Objective**: Design an algorithm to dynamically maintain the MST of an undirected graph as edges are inserted, deleted, or their weights changed.
-   - **Input/Output**: Perform operations from `mst.in` and write the MST weight or 'Disconnected' to `mst.out`.
+## pa3: Dynamic Minimum Spanning Tree
+- **Objective:** Implement an algorithm to dynamically maintain the minimum spanning tree (MST) of an initially empty undirected graph.
+- **Grade:** Full score (16/10) - additional credit received.
+- **Key Features:** Handles operations like insertEdge, findMST, deleteEdge, and changeWeight efficiently.
